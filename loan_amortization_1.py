@@ -63,6 +63,14 @@ def monthly_principal(monthly_payment, current_interest_payment):
     """
     return monthly_payment - current_interest_payment
 
+def validate_startDate_paymentDate(startDate, paymentDate):
+    """
+    Зээлийн эхлэх огноо болон эхний төлөлтийн огноо зөвшөөрөгдөх
+    эсэхийг шалгана
+    :param startDate: Зээл эхлэх огноо
+    :param paymentDate: Зээлийн эхний төлөлтийн огноо
+    :return: Зээлийн эхлэх огноо болон төлөлт зөв эсэх boolean буцаана
+    """
 
 def amortize(annual_rate, duration_years, start_year, start_month, P):
     """
