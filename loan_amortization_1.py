@@ -1,18 +1,21 @@
 import locale
+
 locale.setlocale(locale.LC_ALL, '')
 # Параметрээр авах шаардлагтай бол үүнийг uncomment болго
-#import argparse
+# import argparse
 from beautifultable import BeautifulTable
 from datetime import datetime
 
-def perdiem(amount, rate):
+
+def interest_per_payment(amount, rate, days):
     """
     Тухайн төлөлт дээрх хүүгийн хэмжээг олох
     :param amount: Зээлийн үлдэгдэл
-    :param rate: Зээлийн хүү
+    :param rate: Өдрийн хүү
+    :param days: Хүү тооцох хоног
     :return: Тухайн төлөлт дээрх хүүгийн хэмжээ
     """
-    return (amount * rate) / 365
+    return amount * rate * days
 
 
 def days_per_month(month, year):
@@ -34,6 +37,7 @@ def days_per_month(month, year):
     else:
         raise ValueError('month expected', month)
 
+
 def next_month(month, year):
     """
     Дараагийн сар, жилийг олох
@@ -49,16 +53,6 @@ def next_month(month, year):
         next_year = year
     return next_month, next_year
 
-def monthly_interest(principal, days, rate):
-    """
-    Тухайн төлөлт дэх хүүгийн төлбөрийг олох
-    :param principal: Хүү тооцох дүн
-    :param days: Хүү тооцох хоног
-    :param rate: Хүү
-    :return: Тухайн төлөлтийн хүүгийн хэмжээг буцаана.
-    """
-    return perdiem(principal, rate) * days
-
 
 def monthly_principal(monthly_payment, current_interest_payment):
     """
@@ -68,6 +62,7 @@ def monthly_principal(monthly_payment, current_interest_payment):
     :return: Тухайн төлөлтийн үндсэн зээлийн төлбөр
     """
     return monthly_payment - current_interest_payment
+
 
 def amortize(annual_rate, duration_years, start_year, start_month, P):
     """
@@ -80,13 +75,16 @@ def amortize(annual_rate, duration_years, start_year, start_month, P):
     :return: Зээлийн хуваарь
     """
     n = 0
-    #Сарын хүү
-    intrate = annual_rate / 12
-    #Нийт төлөлтийн хэмжээ
+
+    # Сарын хүү
+    rate_per_payment = annual_rate / 12
+
+    # Нийт төлөлтийн хэмжээ
     totalpmts = duration_years * 12
-    ratio = pow(1 + intrate, totalpmts)
-    #Тэнцүү төлөлтийг олох
-    payment = (P * intrate * ratio) / (ratio - 1)
+
+    # Тэнцүү төлөлтийг олох
+    ratio = pow(1 + rate_per_payment, totalpmts)
+    payment = (P * rate_per_payment * ratio) / (ratio - 1)
 
     table = BeautifulTable(maxwidth=120)
     table.columns.header = ["ТӨЛӨЛТ",
@@ -98,6 +96,8 @@ def amortize(annual_rate, duration_years, start_year, start_month, P):
                             "ХҮҮ",
                             "ҮНДСЭН ТӨЛБӨР",
                             "ЭЦСИЙН ҮЛДЭГДЭЛ"]
+
+    # Эхний төлөлтийн огноог тохируулах
     year = start_year
     month = start_month
     while P > 0:
@@ -105,9 +105,9 @@ def amortize(annual_rate, duration_years, start_year, start_month, P):
         amount = P
 
         days = days_per_month(month, year)
-        interest_due = monthly_interest(amount, days, rate)
+        interest_amount = interest_per_payment(amount, days, rate)
 
-        interest = P * intrate
+        interest = P * rate_per_payment
         principle = payment - interest
 
         if P - payment < 0:
