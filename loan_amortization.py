@@ -48,20 +48,21 @@ def yield_expected_payment_schedule(start_year,
         interest_due = monthly_interest(amount, days, rate)
         if amount > 0:
             yield {'balance at month start': amount,
-                   'interest due': monthly_interest(amount, days, rate),
+                   'interest due': interest_due,
                    'year': year,
-                   'month': month
+                   'month': month,
+                   'days': days
                    }
         amount = amount - (monthly_payment - interest_due)
         month, year = next_month(month, year)
 
 
 if __name__ == '__main__':
-    arg_dict1 = dict(start_year=1965,
-                     start_month=8,
-                     initial_amount=1000,
+    arg_dict1 = dict(start_year=2022,
+                     start_month=3,
+                     initial_amount=1000000,
                      rate=0.05,
                      duration_in_years=1,
-                     monthly_payment=85.61)
+                     monthly_payment=88848)
     schedule = list(yield_expected_payment_schedule(**arg_dict1))
     print(schedule)
